@@ -42,8 +42,8 @@ stages:
       name: Default
     steps:
     - script: |
-        echo '##vso[task.setvariable variable=dcEnvironmentName]$(VM_Environment_Name)_$(Build.BuildNumber)'
-        echo '##vso[task.setvariable variable=dc_quick_deploy_conf_file_name]$(Teamcenter_Install_Scenario).xml'
+        echo 'vso[task.setvariable variable=dcEnvironmentName]$(VM_Environment_Name)_$(Build.BuildNumber)'
+        echo 'vso[task.setvariable variable=dc_quick_deploy_conf_file_name]$(Teamcenter_Install_Scenario).xml'
         if [ "$(Teamcenter_Install_Scenario)" == "Install_Fnd140" ]; then
           echo '##vso[task.setvariable variable=target_vm_tc_path]/usr/Siemens/Teamcenter14/teamcenter_root'
         elif [ "$(Teamcenter_Install_Scenario)" == "Install_Fnd141" ]; then
