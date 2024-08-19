@@ -42,7 +42,7 @@ stages:
         TARGET_VM_MACHINE_NAME=DENBG0817VM
         DC_ENV_NAME=test01
         INPUT_FILE_PATH='/opt/app/siemens/Sample_xml_Files/test_install_Fnd140.xml'
-        SCRIPTS_DIR_NAME=$(scripts_dir_name)
+        SCRIPTS_DIR_NAME=$(SCRIPTS_DIR_NAME)
         echo "Generating Deploy script using Quick Deploy"
         cd $(DC_QUICK_DEPLOY_PATH)
         ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$INPUT_FILE_PATH -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$SCRIPTS_DIR_NAME -machine=$TARGET_VM_MACHINE_NAME
