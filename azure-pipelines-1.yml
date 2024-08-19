@@ -31,10 +31,10 @@ stages:
         scripts_dir_name='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         machine_script_path='$(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$(dcEnvironmentName)/install/$(scripts_dir_name)/$(machine_script_zip_name)'
         unzip_target_path='$(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$(scripts_dir_name)/$(machine_script_dir_name)'
-        echo "$(target_vm_machine_name)"
-        echo "$(machine_script_dir_name)"
-        echo "$(machine_script_zip_name)"
-        echo "$(scripts_dir_name)"
+        echo "$target_vm_machine_name"
+        echo "$machine_script_dir_name"
+        echo "$machine_script_zip_name"
+        echo "$scripts_dir_name"
         echo "$(machine_script_path)"
         echo "$(unzip_target_path)"
         echo "$(Build.BuildNumber)"
