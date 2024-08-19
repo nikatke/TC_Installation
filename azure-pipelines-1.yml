@@ -54,11 +54,9 @@ stages:
         DC_ENV_NAME=test01
         INPUT_FILE_PATH='/opt/app/siemens/Sample_xml_Files/test_install_Fnd140.xml'
         SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)
-        echo "$SCRIPTS_DIR_NAME"
-        echo "type(SCRIPTS_DIR_NAME)"
         echo "Generating Deploy script using Quick Deploy"
         cd $(DC_QUICK_DEPLOY_PATH)
-        ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$INPUT_FILE_PATH -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$SCRIPTS_DIR_NAME -machine=$TARGET_VM_MACHINE_NAME
+        ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$INPUT_FILE_PATH -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=deploy_20240819_16 -machine=$TARGET_VM_MACHINE_NAME
       displayName: 'Generate Deploy Script'
 
 - stage: Copy_Deploy_Script
@@ -71,7 +69,7 @@ stages:
         SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         machine_script_zip_name = deploy_DENBG0817VM.zip
         echo "Copying files to the destination server"
-        scp -r $(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$(DC_ENV_NAME)/install/$SCRIPTS_DIR_NAME/$machine_script_zip_name infodba@192.168.80.108:$(TARGET_VM_DEPLOY_SCRIPTS_DIR)
+        scp -r $(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$(DC_ENV_NAME)/install/$deploy_20240819_16/$machine_script_zip_name infodba@192.168.80.108:$(TARGET_VM_DEPLOY_SCRIPTS_DIR)
       displayName: 'Copy Files to Destination Server'
 
 - stage: Unzip_Deploy_Script
@@ -84,5 +82,5 @@ stages:
         SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         machine_script_zip_name = deploy_DENBG0817VM.zip
         echo "Unzipping files to the destination server"
-        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 unzip $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$machine_script_zip_name -d $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME
+        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 unzip $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16/$machine_script_zip_name -d $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16
       displayName: 'Unzip Files on Destination Server'
