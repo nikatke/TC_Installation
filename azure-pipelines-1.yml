@@ -20,7 +20,7 @@ stages:
   jobs:
   - job: Prepare_Azure_Variables
     pool:
-      name: Default
+      name: TC_811
     steps:
     - script: |
         # Setting the specified variables
@@ -35,6 +35,8 @@ stages:
 - stage: Generate_Deploy_Script
   jobs:
   - job: Generate
+    pool:
+      name: TC_811
     steps:
     - script: |
         TARGET_VM_MACHINE_NAME=DENBG0817VM
@@ -49,6 +51,8 @@ stages:
 - stage: Copy_Deploy_Script
   jobs:
   - job: Copy
+    pool:
+      name: TC_811
     steps:
     - script: |
         echo "Copying files to the destination server"
@@ -58,6 +62,8 @@ stages:
 - stage: Unzip_Deploy_Script
   jobs:
   - job: Unzip
+    pool:
+      name: TC_811
     steps:
     - script: |
         echo "Unzipping files to the destination server"
