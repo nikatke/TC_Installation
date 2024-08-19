@@ -30,6 +30,11 @@ stages:
         echo '##vso[task.setvariable variable=scripts_dir_name]$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         echo '##vso[task.setvariable variable=machine_script_path]$(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$(dcEnvironmentName)/install/$(scripts_dir_name)/$(machine_script_zip_name)'
         echo '##vso[task.setvariable variable=unzip_target_path]$(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$(scripts_dir_name)/$(machine_script_dir_name)'
+        echo "$(target_vm_machine_name)"
+        echo "$(machine_script_dir_name)"
+        echo "$(machine_script_zip_name)"
+        echo "$(scripts_dir_name)"
+        echo "$(Build.BuildNumber)"
       displayName: 'Prepare Azure Variables'
 
 - stage: Generate_Deploy_Script
