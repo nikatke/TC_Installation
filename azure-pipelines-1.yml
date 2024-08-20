@@ -46,7 +46,7 @@ stages:
     - script: |
         # Setting the specified variables
         
-        target_vm_machine_name= '$(Destination_Machine_Name)' 
+        target_vm_machine_name= '$Destination_Machine_Name' 
         dcEnvironmentName='$(VM_Environment_Name)_$(Build.BuildNumber)'
         machine_script_dir_name='deploy_'$target_vm_machine_name
         machine_script_zip_name=$machine_script_dir_name.zip
