@@ -71,7 +71,8 @@ stages:
     - script: |
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         echo "$TARGET_VM_MACHINE_NAME"
-        DC_ENV_NAME='${{ parameters.VM_Environment_Name }}_$(Build.BuildNumber)'
+        BUILD_NUMBER_UNDERSCORE=$(echo "$(Build.BuildNumber)" | sed 's/\./_/g')
+        DC_ENV_NAME="${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER_UNDERSCORE"
         echo "$DC_ENV_NAME"
         SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         echo "Generating Deploy script using Quick Deploy"
