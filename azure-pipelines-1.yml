@@ -31,7 +31,9 @@ variables:
   TARGET_VM_DEPLOY_SCRIPTS_DIR: '/opt/app/siemens'
   TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO: '/opt/app/siemens/dc_14.1/repository/deploy_scripts'
   TARGET_VM_SOFTWARE_LOCATION: '/opt/app/siemens/dc_14.1/repository/software'  # SoftwareLocation
-  DC_ENV_NAME: test01
+  #DC_ENV_NAME: test01
+  INPUT_FILE_PATH: '/opt/app/siemens/Sample_xml_Files/test_install_Fnd140.xml'
+  
   
 
 stages:
@@ -45,7 +47,7 @@ stages:
         # Setting the specified variables
         
         target_vm_machine_name= $(Destination_Machine_Name)#'DENBG0817VM'
-        dcEnvironmentName='$(VM_Environment_Name)_$(Build.BuildNumber)'#test01
+        dcEnvironmentName='$(VM_Environment_Name)_$(Build.BuildNumber)' #test01
         machine_script_dir_name='deploy_'$target_vm_machine_name
         machine_script_zip_name=$machine_script_dir_name.zip
         scripts_dir_name='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
@@ -67,13 +69,12 @@ stages:
       name: TC_811
     steps:
     - script: |
-        TARGET_VM_MACHINE_NAME=DENBG0817VM
-        DC_ENV_NAME=test01
-        INPUT_FILE_PATH='/opt/app/siemens/Sample_xml_Files/test_install_Fnd140.xml'
-        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)
+        TARGET_VM_MACHINE_NAME=$(Destination_Machine_Name)
+        DC_ENV_NAME='$(VM_Environment_Name)_$(Build.BuildNumber)'
+        SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         echo "Generating Deploy script using Quick Deploy"
         cd $(DC_QUICK_DEPLOY_PATH)
-        ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$INPUT_FILE_PATH -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=deploy_20240819_16 -machine=$TARGET_VM_MACHINE_NAME
+        ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$(INPUT_FILE_PATH) -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$SCRIPTS_DIR_NAME -machine=$TARGET_VM_MACHINE_NAME
       displayName: 'Generate Deploy Script'
 
 - stage: Copy_Deploy_Script
