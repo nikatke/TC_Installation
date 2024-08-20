@@ -71,10 +71,11 @@ stages:
     - script: |
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         echo "$TARGET_VM_MACHINE_NAME"
-        BUILD_NUMBER_UNDERSCORE=$(echo "$(Build.BuildNumber)" | sed 's/\./_/g')
-        DC_ENV_NAME="${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER_UNDERSCORE"
+        DC_ENV_NAME='${{ parameters.VM_Environment_Name }}_$(Build.BuildNumber)'
         echo "$DC_ENV_NAME"
-        SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
+        BUILD_NUMBER_UNDERSCORE=$(echo "$(Build.BuildNumber)" | sed 's/\./_/g')
+        SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER_UNDERSCORE'
+        echo "$SCRIPTS_DIR_NAME"
         echo "Generating Deploy script using Quick Deploy"
         cd $(DC_QUICK_DEPLOY_PATH)
         ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$(INPUT_FILE_PATH) -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$SCRIPTS_DIR_NAME -machine=$TARGET_VM_MACHINE_NAME
