@@ -111,4 +111,4 @@ stages:
     - script: |
         echo "Executing deploy script in the destination server"
         ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16/deploy_DENBG0817VM ./deploy.sh -softwareLocation=/mnt/dumps/TC/TC14 -dcusername=dcadmin -dcpassword=dcadmin
-      displayName: 'Unzip Files on Destination Server'      
+      displayName: 'Execute deploy script on Destination Server'      
