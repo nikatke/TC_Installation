@@ -69,7 +69,8 @@ stages:
       name: TC_811
     steps:
     - script: |
-        TARGET_VM_MACHINE_NAME='$(Destination_Machine_Name)''
+        TARGET_VM_MACHINE_NAME='$Destination_Machine_Name'
+        echo "$TARGET_VM_MACHINE_NAME"
         DC_ENV_NAME='$(VM_Environment_Name)_$(Build.BuildNumber)'
         SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         echo "Generating Deploy script using Quick Deploy"
