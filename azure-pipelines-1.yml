@@ -75,7 +75,7 @@ stages:
         BUILD_NUMBER=$(Build.BuildNumber)
         BUILD_NUMBER=${BUILD_NUMBER//./_}
         echo "$BUILD_NUMBER"
-        DC_ENV_NAME='${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER'
+        DC_ENV_NAME=${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER
         echo "$DC_ENV_NAME"
         SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
         echo "$SCRIPTS_DIR_NAME"
