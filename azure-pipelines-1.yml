@@ -4,6 +4,23 @@ trigger:
 pool: 
   name: TC_811
 
+parameters:
+- name: VM_Environment_Name
+  displayName: 'VM Environment Name'
+  type: string
+  values:
+  - TEST1
+  - TEST2
+  - TEST3
+  default: TEST1
+- name: Destination_Machine_Name
+  displayName: 'Destination Machine Name'
+  type: string
+  values:
+  - DENBG0817VM
+  - DENBG0811VM
+  default: DENBG0817VM
+
 variables:
   dcusername: 'dcadmin'
   dcpassword: 'dcadmin'
@@ -84,3 +101,14 @@ stages:
         echo "Unzipping files to the destination server"
         ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 unzip $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16/deploy_DENBG0817VM.zip -d $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16/deploy_DENBG0817VM
       displayName: 'Unzip Files on Destination Server'
+      
+- stage: Execute_Deploy_Script
+  jobs:
+  - job: Execute
+    pool:
+      name: TC_811
+    steps:
+    - script: |
+        echo "Executing deploy script in the destination server"
+        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/deploy_20240819_16/deploy_DENBG0817VM ./deploy.sh -softwareLocation=/mnt/dumps/TC/TC14 -dcusername=dcadmin -dcpassword=dcadmin
+      displayName: 'Unzip Files on Destination Server'      
