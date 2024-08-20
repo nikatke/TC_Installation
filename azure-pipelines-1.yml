@@ -46,8 +46,8 @@ stages:
     - script: |
         # Setting the specified variables
         
-        target_vm_machine_name= $(Destination_Machine_Name)#'DENBG0817VM'
-        dcEnvironmentName='$(VM_Environment_Name)_$(Build.BuildNumber)' #test01
+        target_vm_machine_name= '$(Destination_Machine_Name)' 
+        dcEnvironmentName='$(VM_Environment_Name)_$(Build.BuildNumber)'
         machine_script_dir_name='deploy_'$target_vm_machine_name
         machine_script_zip_name=$machine_script_dir_name.zip
         scripts_dir_name='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
@@ -69,7 +69,7 @@ stages:
       name: TC_811
     steps:
     - script: |
-        TARGET_VM_MACHINE_NAME=$(Destination_Machine_Name)
+        TARGET_VM_MACHINE_NAME='$(Destination_Machine_Name)''
         DC_ENV_NAME='$(VM_Environment_Name)_$(Build.BuildNumber)'
         SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         echo "Generating Deploy script using Quick Deploy"
