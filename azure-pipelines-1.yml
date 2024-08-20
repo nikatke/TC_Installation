@@ -132,8 +132,17 @@ stages:
         BUILD_NUMBER=${BUILD_NUMBER//./_}
         echo "$BUILD_NUMBER"
         SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
+        echo "$SCRIPTS_DIR_NAME"
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         MACHINE_SCRIPT_DIR_NAME='deploy_'$TARGET_VM_MACHINE_NAME
         echo "Executing deploy script in the destination server"
-        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)
+        
+        # Print the full command for debugging
+        FULL_COMMAND="cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)"
+        echo "Executing command: $FULL_COMMAND"
+        
+        # Run the command over SSH
+        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 "$FULL_COMMAND"
+        
+        #ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)
       displayName: 'Execute deploy script in Destination Server'      
