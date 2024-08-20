@@ -76,7 +76,7 @@ stages:
         BUILD_NUMBER=$(Build.BuildNumber)
         BUILD_NUMBER=${BUILD_NUMBER//./_}
         echo "$BUILD_NUMBER"
-        SCRIPTS_DIR_NAME='$(DC_DEPLOY_SCRIPT_DIR_NAME)_${BUILD_NUMBER}'
+        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
         echo "$SCRIPTS_DIR_NAME"
         echo "Generating Deploy script using Quick Deploy"
         cd $(DC_QUICK_DEPLOY_PATH)
