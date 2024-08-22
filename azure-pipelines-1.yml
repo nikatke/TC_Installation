@@ -32,7 +32,11 @@ variables:
   TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO: '/opt/app/siemens/dc_14.1/repository/deploy_scripts'
   #TARGET_VM_SOFTWARE_LOCATION: '/opt/app/siemens/dc_14.1/repository/software'  # SoftwareLocation
   TARGET_VM_SOFTWARE_LOCATION: '/mnt/dumps/TC/TC14' 
-  INPUT_FILE_PATH: '/opt/app/siemens/Sample_xml_Files/test_install_Fnd140.xml'
+  INPUT_FILE_PATH: '/opt/app/siemens/Sample_xml_Files/LS24_install_Fnd140.xml'
+  BUILD_NO: $(Build.BuildNumber)
+  BUILD_NUMBER: ${BUILD_NO//./_}
+  SCRIPTS_DIR_NAME: $(DC_DEPLOY_SCRIPT_DIR_NAME)_$(BUILD_NUMBER)
+  
   
 
 stages:
@@ -52,13 +56,7 @@ stages:
         scripts_dir_name='$(DC_DEPLOY_SCRIPT_DIR_NAME)_$(Build.BuildNumber)'
         machine_script_path=$(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$dcEnvironmentName/install/$scripts_dir_name/$machine_script_zip_name
         unzip_target_path=$(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$scripts_dir_name/$machine_script_dir_name
-        echo "$target_vm_machine_name"
-        echo "$machine_script_dir_name"
-        echo "$machine_script_zip_name"
-        echo "$scripts_dir_name"
-        echo "$machine_script_path"
-        echo "$unzip_target_path"
-        echo "$(Build.BuildNumber)"
+        
       displayName: 'Prepare Azure Variables'
 
 - stage: Generate_Deploy_Script
@@ -68,39 +66,27 @@ stages:
       name: TC_811
     steps:
     - script: |
+    
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
-        echo "$TARGET_VM_MACHINE_NAME"
-        
-        BUILD_NUMBER=$(Build.BuildNumber)
-        BUILD_NUMBER=${BUILD_NUMBER//./_}
-        echo "$BUILD_NUMBER"
-        DC_ENV_NAME=${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER
-        echo "$DC_ENV_NAME"
-        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
-        echo "$SCRIPTS_DIR_NAME"
+        DC_ENV_NAME=${{ parameters.VM_Environment_Name }}_$(BUILD_NUMBER)
         echo "Generating Deploy script using Quick Deploy"
-        cd $(DC_QUICK_DEPLOY_PATH)
-        ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$(INPUT_FILE_PATH) -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$SCRIPTS_DIR_NAME -machine=$TARGET_VM_MACHINE_NAME
+        cd $(DC_QUICK_DEPLOY_PATH) && ./dc_quick_deploy.sh -dcurl=$(DC_URL) -environment=$DC_ENV_NAME -inputFile=$(INPUT_FILE_PATH) -dcusername=$(dcusername) -dcpassword=$(dcpassword) -scriptDirectoryName=$(SCRIPTS_DIR_NAME) -machine=$TARGET_VM_MACHINE_NAME
       displayName: 'Generate Deploy Script'
 
 - stage: Copy_Deploy_Script
   jobs:
   - job: Copy
     pool:
-      name: TC_811
+      name: TC_811  
     steps:
     - script: |
-        BUILD_NUMBER=$(Build.BuildNumber)
-        BUILD_NUMBER=${BUILD_NUMBER//./_}
-        echo "$BUILD_NUMBER"
-        DC_ENV_NAME=${{ parameters.VM_Environment_Name }}_$BUILD_NUMBER
-        echo "$DC_ENV_NAME"
-        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
+        
+        DC_ENV_NAME=${{ parameters.VM_Environment_Name }}_$(BUILD_NUMBER)
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         MACHINE_SCRIPT_DIR_NAME='deploy_'$TARGET_VM_MACHINE_NAME
         MACHINE_SCRIPT_ZIP_NAME=$MACHINE_SCRIPT_DIR_NAME.zip
         echo "Copying files to the destination server"
-        scp -r $(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$DC_ENV_NAME/install/$SCRIPTS_DIR_NAME infodba@192.168.80.108:$(TARGET_VM_DEPLOY_SCRIPTS_DIR)
+        scp -r $(TARGET_VM_MAPPED_DRIVE_BACK_TO_DC_REPO)/$DC_ENV_NAME/install/$(SCRIPTS_DIR_NAME) infodba@192.168.80.108:$(TARGET_VM_DEPLOY_SCRIPTS_DIR)
       displayName: 'Copy Files to Destination Server'
 
 - stage: Unzip_Deploy_Script
@@ -110,15 +96,12 @@ stages:
       name: TC_811
     steps:
     - script: |
-        BUILD_NUMBER=$(Build.BuildNumber)
-        BUILD_NUMBER=${BUILD_NUMBER//./_}
-        echo "$BUILD_NUMBER"
-        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
+        
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         MACHINE_SCRIPT_DIR_NAME='deploy_'$TARGET_VM_MACHINE_NAME
         MACHINE_SCRIPT_ZIP_NAME=$MACHINE_SCRIPT_DIR_NAME.zip
         echo "Unzipping files to the destination server"
-        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 unzip $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_ZIP_NAME -d $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME
+        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 unzip $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$(SCRIPTS_DIR_NAME)/$MACHINE_SCRIPT_ZIP_NAME -d $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$(SCRIPTS_DIR_NAME)/$MACHINE_SCRIPT_DIR_NAME
       displayName: 'Unzip Files on Destination Server'
       
 - stage: Execute_Deploy_Script
@@ -128,21 +111,14 @@ stages:
       name: TC_811
     steps:
     - script: |
-        BUILD_NUMBER=$(Build.BuildNumber)
-        BUILD_NUMBER=${BUILD_NUMBER//./_}
-        echo "$BUILD_NUMBER"
-        SCRIPTS_DIR_NAME=$(DC_DEPLOY_SCRIPT_DIR_NAME)_$BUILD_NUMBER
-        echo "$SCRIPTS_DIR_NAME"
+        
         TARGET_VM_MACHINE_NAME='${{ parameters.Destination_Machine_Name }}'
         MACHINE_SCRIPT_DIR_NAME='deploy_'$TARGET_VM_MACHINE_NAME
         echo "Executing deploy script in the destination server"
-        
-        # Print the full command for debugging
-        FULL_COMMAND="cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)"
-        echo "Executing command: $FULL_COMMAND"
-        
-        # Run the command over SSH
-        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 "$FULL_COMMAND"
-        
-        #ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$SCRIPTS_DIR_NAME/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)
+        COMMAND="cd $(TARGET_VM_DEPLOY_SCRIPTS_DIR)/$(SCRIPTS_DIR_NAME)/$MACHINE_SCRIPT_DIR_NAME && ./deploy.sh -softwareLocation=$(TARGET_VM_SOFTWARE_LOCATION) -dcusername=$(dcusername) -dcpassword=$(dcpassword)"
+        ROOT_PASSWORD=$(ROOT_PASSWORD_817)
+        REMOTE_COMMAND="echo $ROOT_PASSWORD | sudo -S su - root -c '$COMMAND'"
+        echo "Executing command as root: $COMMAND"
+        ssh -T -o StrictHostKeyChecking=no infodba@192.168.80.108 "$REMOTE_COMMAND"
+
       displayName: 'Execute deploy script in Destination Server'      
